@@ -10,18 +10,31 @@ const styles = {
   },
 };
 
+
 function AdvanceCounter() {
   const [count, setCount] = useState(0);
   const [step, setStep] = useState(1)
+  const [countHistory, setCountHistory] = useState([0])
 
   const numStep = Number(step)//e.target.value is a string so it needs to be converted to a number
 
   function decrement() {
-    setCount((prevCount) => prevCount - numStep);
+    /*
+    setCount((prevCount) => prevCount - numStep);//setCount schedules the change to -1
+    setCountHistory((prevHistory) => [...prevHistory, count])//setCountHistory adds 0 to the history, because count is still 0 in this function call
+    */
+
+    //calculate the updated count then use 
+    // it for setCount ans setHistoryCount
+    const updatedCount = count - numStep
+    setCount(updatedCount);//setCount schedules the change
+    setCountHistory((prevHistory) => [...prevHistory, updatedCount])
   }
 
   function increment() {
-    setCount((prevCount) => prevCount + numStep);
+    const updatedCount = count + numStep
+    setCount(updatedCount);
+    setCountHistory((prevHistory) => [...prevHistory, updatedCount])
   }
 
   function handleStep(e: ChangeEvent<HTMLInputElement>){
@@ -56,6 +69,13 @@ function AdvanceCounter() {
           />
         </div>
         <span>Changes Saved</span>
+      </div>
+
+      <div>
+        <h3>Count History:</h3>
+        {countHistory.map((count) => (
+            <p>{count}</p>
+        ))}
       </div>
     </div>
   );
