@@ -1,5 +1,18 @@
 import { useState } from "react";
 
+
+
+//Style Map
+const styles = {
+    counter : {
+        container: 'rounded-lg border-l-4 px-4 py-3 border-[#bf00ff] bg-[#bf00ff]/8 shadow-[0_0_10px_#bf00ff55]',
+        btn: 'rounded-md border border-zinc-600 px-4 py-2 hover:bg-zinc-800'
+    }
+}
+
+
+
+
 function AdvanceCounter() {
   const [count, setCount] = useState(0);
 
@@ -12,10 +25,10 @@ function AdvanceCounter() {
   }
 
   return (
-    <>
+    <div className={styles.counter.container}>
       <button
         onClick={increment}
-        className="rounded-md border border-zinc-600 mr-3 px-4 py-2 hover:bg-zinc-800"
+        className={`${styles.counter.btn} mr-3`}
       >
         +
       </button>
@@ -23,11 +36,11 @@ function AdvanceCounter() {
 
       <button
         onClick={decrement}
-        className="rounded-md border border-zinc-600 ml-3 px-4 py-2 hover:bg-zinc-800"
+        className={`${styles.counter.btn} ml-3`}
       >
         -
       </button>
-    </>
+    </div>
   );
 }
 
