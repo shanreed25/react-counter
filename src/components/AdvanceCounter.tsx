@@ -133,8 +133,10 @@ function AdvanceCounter() {
 
       <div>
         <h3>Count History:</h3>
-        {countHistory.map((count) => (
-            <p>{count}</p>
+        {countHistory.map((count, index) => (//map passes a second argument, the position of the item in the array
+          //using index is ok here because items can only be be added to the end and they cannot be deleted
+          // so the same index always points to the same item
+            <p key={index}>{count}</p>
         ))}
       </div>
     </div>
