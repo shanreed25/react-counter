@@ -29,3 +29,11 @@
 - [X] the list should contain all the count values starting with 0
     - update the history list state everytime count state changes
 - [X] display the list on the screen
+
+
+### Saves the count to localStorage
+- [X] save all three values together in localStorage
+    - [X] create interface with a shape that has count, step and history
+    - [X] create a loader function that will return count, step and history in the shape of the interface
+    - [X] pass the loader function to the state
+    - [X] use useEffect snd setTimeout to save the new values to localStorage

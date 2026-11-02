@@ -1,4 +1,5 @@
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
+import loadSavedCounterInfo from "../utils/storage";
 
 //Style Map
 const styles = {
@@ -12,9 +13,32 @@ const styles = {
 
 
 function AdvanceCounter() {
-  const [count, setCount] = useState(0);
-  const [step, setStep] = useState(1)
-  const [countHistory, setCountHistory] = useState([0])
+  /*
+    coun, step and countHistory states load their startig value from localStorage
+    using lazy initialization useState(() =>.....), which allows it to be called on first render
+  */
+  const [count, setCount] = useState(() => loadSavedCounterInfo().count);//only on first render
+  const [step, setStep] = useState(() => loadSavedCounterInfo().step)
+  const [countHistory, setCountHistory] = useState(() => loadSavedCounterInfo().history)
+  const [countStatus, setCountStatus] = useState("Changes Saved")
+
+
+/*
+  Auto save feature runs after first render then everytime
+  count, step orr countHistory changes
+*/
+  useEffect(() => {
+    setCountStatus("Saving to localStorage.....")
+    const timer = setTimeout(() => {
+        const counterData = {count, step, countHistory}
+        localStorage.setItem("reactCounter", JSON.stringify(counterData))
+        setCountStatus("Changes Saved");
+        console.log("Saved:", counterData);
+    }, 1000)//1 second delay
+
+    //runs before the effect runs again or if the component unmounts
+    return () => clearTimeout(timer)
+  }, [count, step, countHistory])
 
   const numStep = Number(step)//e.target.value is a string so it needs to be converted to a number
 
@@ -38,12 +62,13 @@ function AdvanceCounter() {
   }
 
   function handleStep(e: ChangeEvent<HTMLInputElement>){
-    setStep(Number(e.target.value))
+    setStep(e.target.value)
 
   }
 
   function handleReset(){
     setCount(0)
+    setStep("1")
     setCountHistory([0])
   }
 
@@ -76,7 +101,7 @@ function AdvanceCounter() {
           onChange={handleStep}
           />
         </div>
-        <span>Changes Saved</span>
+        <span>{countStatus}</span>
       </div>
 
       <div>
