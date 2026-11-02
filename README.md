@@ -37,3 +37,12 @@
     - [X] create a loader function that will return count, step and history in the shape of the interface
     - [X] pass the loader function to the state
     - [X] use useEffect snd setTimeout to save the new values to localStorage
+
+### Add Keyboard listeners
+- [X] add a useEffect that
+- [X] listens for arrow keys
+- [X] when up arrow is pressed increment
+- [X] when down arrow is pressed decrement
+- [X] adds an event listener for `keydown` with logic to handle them
+- [X] add remove event listener as a clean up function for the useEffect
+- [X] the useEffect should rerun when the increment or decrement functions changes
