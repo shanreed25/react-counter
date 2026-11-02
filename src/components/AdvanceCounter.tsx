@@ -42,6 +42,11 @@ function AdvanceCounter() {
 
   }
 
+  function handleReset(){
+    setCount(0)
+    setCountHistory([0])
+  }
+
 
   return (
     <div className={styles.counter.counterContainer}>
@@ -55,7 +60,10 @@ function AdvanceCounter() {
         <button onClick={decrement} className={`${styles.counter.btn} ml-3`}>
           -
         </button>
-        <button className={`${styles.counter.btn} ml-5`}>Reset</button>
+        <button 
+        className={`${styles.counter.btn} ml-5`}
+        onClick={handleReset}
+        >Reset</button>
       </div>
 
       <div>
