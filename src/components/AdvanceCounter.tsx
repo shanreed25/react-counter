@@ -5,7 +5,7 @@ import { useState } from "react";
 //Style Map
 const styles = {
     counter : {
-        container: 'rounded-lg border-l-4 px-4 py-3 border-[#bf00ff] bg-[#bf00ff]/8 shadow-[0_0_10px_#bf00ff55]',
+        container: 'rounded-lg  px-4 py-3 border-[#bf00ff] bg-[#bf00ff]/8 shadow-[0_0_10px_#bf00ff55]',
         btn: 'rounded-md border border-zinc-600 px-4 py-2 hover:bg-zinc-800'
     }
 }
@@ -40,6 +40,7 @@ function AdvanceCounter() {
       >
         -
       </button>
+      <button className={`${styles.counter.btn} ml-5`}>Reset</button>
     </div>
   );
 }
