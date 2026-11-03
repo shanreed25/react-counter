@@ -1,6 +1,15 @@
 # React Counter
 
 
+##  Functionality
+- [X] **Display Current Count:** Show the current count, initialized to 0.
+- [X] **Increment Button:** A button to increase the count by 1.
+- [X] **Decrement Button:** A button to decrease the count by 1.
+- [X] **History Tracking:** Keep a history of all count values and display this history list to the user.
+- [X] **Auto-Save Functionality:** Use useEffect to save the current count to local storage whenever it changes.
+- [X] **Keyboard Event Listeners:** Allow the user to increment and decrement the count by pressing the ArrowUp/ArrowDown key.
+- [X] **Reset Mechanism:** A button to reset the count back to 0 and clear the tracked history of counts.
+- [X] **Step Input:** Input field where the user can define a custom “step” value then use this step value instead of 1.
 
 
 ### Build Counter

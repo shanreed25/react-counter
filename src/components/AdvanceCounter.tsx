@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useCallback, useEffect, useState, type ChangeEvent } from "react";
 import loadSavedCounterInfo from "../utils/storage";
 
 //Style Map
@@ -11,94 +11,84 @@ const styles = {
   },
 };
 
-
 function AdvanceCounter() {
   /*
     coun, step and countHistory states load their startig value from localStorage
     using lazy initialization useState(() =>.....), which allows it to be called on first render
   */
-  const [count, setCount] = useState(() => loadSavedCounterInfo().count);//only on first render
-  const [step, setStep] = useState(() => loadSavedCounterInfo().step)
-  const [countHistory, setCountHistory] = useState(() => loadSavedCounterInfo().history)
-  const [countStatus, setCountStatus] = useState("Changes Saved")
+  const [count, setCount] = useState(() => loadSavedCounterInfo().count); //only on first render
+  const [step, setStep] = useState(() => loadSavedCounterInfo().step);
+  const [countHistory, setCountHistory] = useState(
+    () => loadSavedCounterInfo().history,
+  );
+  const [countStatus, setCountStatus] = useState("Changes Saved");
 
+  const numStep = Number(step); //e.target.value is a string so it needs to be converted to a number
 
-/*
+  const decrement = useCallback(() => {
+    //calculate the updated count then use
+    // it for setCount ans setHistoryCount
+    const updatedCount = count - numStep;
+    setCount(updatedCount); //setCount schedules the change
+    setCountHistory((prevHistory) => [...prevHistory, updatedCount]);
+  }, [count, numStep]);
+
+  const increment = useCallback(() => {
+    const updatedCount = count + numStep;
+    setCount(updatedCount);
+    setCountHistory((prevHistory) => [...prevHistory, updatedCount]);
+  }, [count, numStep]);
+
+  function handleStep(e: ChangeEvent<HTMLInputElement>) {
+    setStep(e.target.value);
+  }
+
+  function handleReset() {
+    setCount(0);
+    setStep("1");
+    setCountHistory([0]);
+  }
+
+  /*
   Auto save feature runs after first render then everytime
   count, step orr countHistory changes
 */
   useEffect(() => {
-    setCountStatus("Saving to localStorage.....")
+    setCountStatus("Saving to localStorage.....");
     const timer = setTimeout(() => {
-        const counterData = {count, step, countHistory}
-        localStorage.setItem("reactCounter", JSON.stringify(counterData))
-        setCountStatus("Changes Saved");
-    }, 1000)//1 second delay
+      const counterData = { count, step, countHistory };
+      localStorage.setItem("reactCounter", JSON.stringify(counterData));
+      setCountStatus("Changes Saved");
+    }, 1000); //1 second delay
 
     //runs before the effect runs again or if the component unmounts
-    return () => clearTimeout(timer)
-  }, [count, step, countHistory])
-
+    return () => clearTimeout(timer);
+  }, [count, step, countHistory]);
 
   /* this effect doesn’t sit and wait for keys it
   runs after the component renders, and its only job is to hand 
-   handleKeyDown to the browser and say “call this function whenever
+   handleArrowkeys to the browser and say “call this function whenever
     a key is pressed.” and the browser keeps a list of functions
      to call for each kind of event
   */
   useEffect(() => {
     const handleArrowKeys = (e: KeyboardEvent) => {
-    if (e.key === "ArrowUp"){
-      e.preventDefault();
-      increment();
-    }else if (e.key === "ArrowDown"){
-      e.preventDefault();
-      decrement();
-    }  }
+      if (e.target instanceof HTMLInputElement) return;
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        increment();
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        decrement();
+      }
+    };
 
-    document.addEventListener("keydown", handleArrowKeys)
+    document.addEventListener("keydown", handleArrowKeys);
 
-    // must pass removeEventListener the exact same function you 
+    // must pass removeEventListener the exact same function you
     // passed addEventListener
-    return () => document.removeEventListener("keydown", handleArrowKeys)
-
-}, [increment, decrement])
-
-
-  const numStep = Number(step)//e.target.value is a string so it needs to be converted to a number
-
-  function decrement() {
-    /*
-    setCount((prevCount) => prevCount - numStep);//setCount schedules the change to -1
-
-    //setCountHistory adds 0 to the history, because count is still 0 in this function call
-    setCountHistory((prevHistory) => [...prevHistory, count])
-    */
-
-    //calculate the updated count then use 
-    // it for setCount ans setHistoryCount
-    const updatedCount = count - numStep
-    setCount(updatedCount);//setCount schedules the change
-    setCountHistory((prevHistory) => [...prevHistory, updatedCount])
-  }
-
-  function increment() {
-    const updatedCount = count + numStep
-    setCount(updatedCount);
-    setCountHistory((prevHistory) => [...prevHistory, updatedCount])
-  }
-
-  function handleStep(e: ChangeEvent<HTMLInputElement>){
-    setStep(e.target.value)
-
-  }
-
-  function handleReset(){
-    setCount(0)
-    setStep("1")
-    setCountHistory([0])
-  }
-
+    return () => document.removeEventListener("keydown", handleArrowKeys);
+  }, [increment, decrement]);
 
   return (
     <div className={styles.counter.counterContainer}>
@@ -112,20 +102,19 @@ function AdvanceCounter() {
         <button onClick={decrement} className={`${styles.counter.btn} ml-3`}>
           -
         </button>
-        <button 
-        className={`${styles.counter.btn} ml-5`}
-        onClick={handleReset}
-        >Reset</button>
+        <button className={`${styles.counter.btn} ml-5`} onClick={handleReset}>
+          Reset
+        </button>
       </div>
 
       <div>
         <div>
           <label htmlFor="step">Step Value:</label>
-          <input 
-          id="step" 
-          type="number"//e.target.value is still a string
-          value={step}//makes the input a controlled input
-          onChange={handleStep}
+          <input
+            id="step"
+            type="number" //e.target.value is still a string
+            value={step} //makes the input a controlled input
+            onChange={handleStep}
           />
         </div>
         <span>{countStatus}</span>
@@ -133,11 +122,16 @@ function AdvanceCounter() {
 
       <div>
         <h3>Count History:</h3>
-        {countHistory.map((count, index) => (//map passes a second argument, the position of the item in the array
-          //using index is ok here because items can only be be added to the end and they cannot be deleted
-          // so the same index always points to the same item
+        {countHistory.map(
+          (
+            count,
+            index, //map passes a second argument, the position of the item in the array
+          ) => (
+            //using index is ok here because items can only be be added to the end
+            // so the same index always points to the same item
             <p key={index}>{count}</p>
-        ))}
+          ),
+        )}
       </div>
     </div>
   );
